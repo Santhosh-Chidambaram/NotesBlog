@@ -8,7 +8,7 @@ display: flex;justify-content: center;align-items: center;">
         <h3 class="mb-4" style="color: #fafafa;text-align: center;font-size:35px;font-weight:light;">Edit Post </h3>
         <form class="form-signin" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-                {{ n_form|crispy }}
+                {{ form|crispy }}
       <button class="btn btn-lg btn-danger btn-block" type="submit">Update Post</button>
         </form>
     </div>

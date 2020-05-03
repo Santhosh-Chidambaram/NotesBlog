@@ -5,9 +5,10 @@ from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.models import User
 from .models import Notes
 from django.contrib.auth.decorators import login_required
-
+from django.views.generic import UpdateView,View
+from django.views.generic.edit import DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
-
 
 def homeView(request):
     note = Notes.objects.all()
@@ -15,9 +16,12 @@ def homeView(request):
         'note':note
     }
     return render(request,'notes/home.html')
-#auth View
-def user_register(request):
-    if request.method == 'POST':
+
+#Register View
+
+class RegisterView(View):
+    
+    def post(self,request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             form.save()
@@ -26,12 +30,14 @@ def user_register(request):
             user = authenticate(request,username=username,password=raw_password)
             login(request,user)
             return HttpResponseRedirect('notes')
-    else:
+    def get(self,request):
         form = UserRegisterForm()
-    return render(request,'notes/register.html',{'form':form})
-#auth View
-def user_login(request):
-    if request.method == 'POST':
+        return render(request,'notes/register.html',{'form':form})
+
+#Login View
+
+class LoginView(View):
+    def post(self,request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(username=username,password=password)
@@ -39,7 +45,8 @@ def user_login(request):
             login(request,user)
             return redirect('notes')
         return HttpResponseRedirect("/user_login")
-    else:
+    
+    def get(self,request):
         return render(request,'notes/login.html')
 
 def user_logout(request):
@@ -78,44 +85,51 @@ def myposts(request):
     return render(request,'notes/myposts.html',context)
 
 #Add Notes View
-@login_required
-def add_notes(request):
-    if request.method == 'POST':
+
+class NotesAddView(LoginRequiredMixin,View):
+
+    def post(self,request):
         form = AddNotesForm(request.POST,request.FILES)
         if form.is_valid():
             n = Notes(user=request.user,title=request.POST['title'],context=request.POST['context'],notes_files=request.FILES['notes_files'])
             n.save()
+            return redirect('notes')
+        return render(request,'notes/addnotes.html',{'form':form})
+    
+    def get(self,request):
+         form = AddNotesForm()
+         return render(request,'notes/addnotes.html',{'form':form})
 
-    form = AddNotesForm()
-    return render(request,'notes/addnotes.html',{'form':form})
-
-
+#About View
 def about(request):
     return render(request,'notes/about.html')
 
 #Edit Notes View
-@login_required
-def edit_notes(request,id):
-    if request.method == 'POST':
-        n_form = NotesEditForm(request.POST,request.FILES,instance=request.user.notes)
-        if n_form.is_valid():
-            n_form.save()
-            return redirect('myposts')
-    n_form = NotesEditForm(instance=request.user.notes)
-    context = {
-        'n_form':n_form
-    }
-    
-    return render(request,'notes/editnotes.html',context)
-def delete_notes(request,id):
-    n = Notes.objects.filter(user=request.user,id=id)
+
+class NotesUpdateView(LoginRequiredMixin,UpdateView):
+    model = Notes
+    fields = ['title','context','notes_files']
+    template_name='notes/edit_notes.html'
+    pk_url_kwarg = 'pk'
+    def form_valid(self,form):
+        note = form.save(commit=False)
+        note.user = self.request.user
+        note.save()
+        return redirect('myposts')
+
+
+#Post DeleteView
+
+def NotesDeleteView(request,pk):
+    n = Notes.objects.filter(id=pk)
     n.delete()
-    
     return redirect('myposts')
 
+
 #Profile View
-def profile(request):
-    if request.method == 'POST':
+
+class ProfileView(LoginRequiredMixin,View):
+    def post(self,request):
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
@@ -124,13 +138,13 @@ def profile(request):
             p_form.save()
             u_form.save()
             return redirect('profile')
-    else:
+    def get(self,request):
         p_form = ProfileUpdateForm(instance=request.user.profile)
         u_form = UserUpdateForm(instance=request.user)
-
-   
-    context ={
+        context ={
         'p_form':p_form,
         'u_form':u_form
     }
-    return render(request,'notes/profile.html',context)
+        return render(request,'notes/profile.html',context)
+
+   

@@ -5,11 +5,12 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class Notes(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=25)
     context = models.CharField(max_length=50)
     pub_date = models.DateTimeField(auto_now=True)
-    notes_files = models.FileField(upload_to='uploads/')
+    notes_files = models.FileField(upload_to='uploads/',blank=True,null=True)
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)

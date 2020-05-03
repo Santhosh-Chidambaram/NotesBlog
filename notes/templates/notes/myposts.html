@@ -10,7 +10,7 @@
         {{note.title}}
         <div style="float: right;">
             <a class="btn-link" href="{% url 'edit_notes' note.id %}" style="padding-right: 20px;"><i class="fa fa-pencil-square-o" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
-            <a class="btn-link" href="{% url 'delete_notes' note.id %}" ><i class="fa fa-trash" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
+            <a class="btn-link" href="{% url 'delete-notes' note.id %}" ><i class="fa fa-trash" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
         </div>
       </div>
       <div class="card-body">
