@@ -1,0 +1,51 @@
+{% extends "notes/base.html" %} {% block post %} {% for note in notes %}
+
+<div class="note-card" style="width: 40% auto; height: 30%; padding: 10px;">
+  <div class="card">
+    <div
+      class="card-header "
+      style="color: #fafafa; font-size: 20px;background-color: rgb(112, 42, 224);"
+    >
+      {{note.title}}
+    </div>
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <p>{{ note.context }}</p>
+        {% if pdf %} {% for p in pdf %} {% if p == note.notes_files %}
+        <a href="/media/{{note.notes_files}}" style="font-size: 25px;">
+          <i class="fa fa-file-pdf-o" style="font-size: 25px; color: red;"
+            >{{note.notes_files}}</i
+          >
+        </a>
+
+        {% else %}
+        <a href="/media/{{ note.notes_files }}">
+          <img
+            src="/media/{{note.notes_files}}"
+            alt="{{note.notes_files}}"
+            width="400"
+            height="150"
+          />
+        </a>
+
+        {% endif %} {% endfor %} {% else %}
+        <a href="/media/{{ note.notes_files }}">
+          <img
+            src="/media/{{note.notes_files}}"
+            alt="{{note.notes_files}}"
+            width="400"
+            height="150"
+          />
+        </a>
+
+        {% endif %}
+
+        <footer class="blockquote-footer">{{ note.user}}</footer>
+      </blockquote>
+    </div>
+    <div class="card-footer text-muted">
+      {{ note.pub_date }}
+    </div>
+  </div>
+</div>
+{% endfor %} {% endblock %}

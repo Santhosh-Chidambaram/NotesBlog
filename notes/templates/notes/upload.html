@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Upload File</h1>
+        <form action="{% url 'handle_file' %}" method="POST">
+            {% csrf_token %}
+        
+        </form>
+    </body>
+</html>
