@@ -9,7 +9,10 @@ urlpatterns = [
         path('myposts',myposts,name='myposts'),
         path('editnotes/<int:pk>',NotesUpdateView.as_view(),name='edit_notes'),
         path('delete/<int:pk>',NotesDeleteView,name='delete-notes'),
-        path('notfiy/',NotificationsView.as_view(),name='notification')
+        path('notfiy/',NotificationsView.as_view(),name='notification'),
+        path('notfiy/remove/<int:pk>',NotifyRemove,name='notify-remove'),
+        path('notfiy/remove/all',NotifyRemoveAll,name='notify-removeall'),
+        path('user/<int:pk>/follow',Follow,name='follow')
 ]
 
 if settings.DEBUG == True:

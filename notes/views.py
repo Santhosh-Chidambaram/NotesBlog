@@ -1,9 +1,9 @@
-from django.shortcuts import render,redirect,reverse
-from django.http import HttpResponse,HttpResponseRedirect
+from django.shortcuts import render,redirect,reverse,get_object_or_404
+from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from .forms import UserRegisterForm,AddNotesForm,ProfileUpdateForm,UserUpdateForm,NotesEditForm
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.models import User
-from .models import Notes
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView,View,ListView
 from django.views.generic.edit import DeleteView
@@ -87,7 +87,11 @@ class NotesAddView(LoginRequiredMixin,View):
         if form.is_valid():
             n = Notes(user=request.user,title=request.POST['title'],context=request.POST['context'],notes_files=request.FILES['notes_files'])
             n.save()
+            for follower in request.user.profile.followers.all():
+                notification =  Notification(new_notes=True,from_user=request.user,to_user=follower,notes=n)
+                notification.save()
             return redirect('home')
+
         return render(request,'notes/addnotes.html',{'form':form})
     
     def get(self,request):
@@ -120,9 +124,13 @@ def NotesDeleteView(request,pk):
 #Profile View
 
 class ProfileView(LoginRequiredMixin,View):
-
-    def get(self,request):
-        return render(request,'notes/profile.html')
+    template_name = "notes/profile.html"
+    def get(self,request,pk):
+        re_user  = get_object_or_404(User,pk=pk)
+        context={
+            "re_user":re_user
+        }
+        return render(request,self.template_name,context)
     
 
 #ProfileEdit View
@@ -136,14 +144,17 @@ class ProfileEditView(View):
         if p_form.is_valid() and u_form.is_valid():
             p_form.save()
             u_form.save()
-            return redirect('profile')
+            return redirect('profile',pk=request.user.pk)
     def get(self,request):
         p_form = ProfileUpdateForm(instance=request.user.profile)
         u_form = UserUpdateForm(instance=request.user)
+        re_user = get_object_or_404(User,pk=request.user.pk)
         context ={
+         're_user':re_user,
         'p_form':p_form,
         'u_form':u_form,
         'profile':True
+        
     }
         return render(request,'notes/profile.html',context)
 
@@ -153,3 +164,30 @@ class NotificationsView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return self.request.user.to_user_set.all().order_by('-date')
+
+def NotifyRemove(request,pk):
+    n = get_object_or_404(Notification,pk=pk)
+    if n.to_user != request.user:
+        return JsonResponse({"removed":"Invalid"})
+    n.delete()
+    res = JsonResponse({"removed":True})
+    return redirect('notification')
+
+def NotifyRemoveAll(request):
+    request.user.to_user_set.all().delete()
+    return redirect('notification')
+
+def Follow(request,pk):
+    re_user = get_object_or_404(User,pk=pk)
+    if request.user in re_user.profile.followers.all():
+        re_user.profile.followers.remove(request.user)
+        re_user.save()
+        notfiy = Notification(to_user=re_user,from_user=request.user,unfollowed=True,followed=False)
+        notfiy.save()
+        return redirect('profile',pk=re_user.pk)
+    else:
+        re_user.profile.followers.add(request.user)
+        re_user.save()
+        notfiy = Notification(to_user=re_user,from_user=request.user,followed=True,unfollowed=False)
+        notfiy.save()
+        return redirect('profile',pk=re_user.pk)

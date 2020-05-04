@@ -13,7 +13,7 @@
     </li>
     
     <li class="nav-item active">
-        <a class="nav-link" href="{% url 'profile' %}" style="color: rgb(20, 213, 220);"><img src="{{ user.profile.profile_pic.url }}" alt="{{ user.profile.profile_pic.url }}" width="35" height="35" class="rounded-circle"> Profile</a>
+        <a class="nav-link" href="{% url 'profile' user.pk %}" style="color: rgb(20, 213, 220);"><img src="{{ user.profile.profile_pic.url }}" alt="{{ user.profile.profile_pic.url }}" width="35" height="35" class="rounded-circle"> {{user.username}}</a>
         </li>
     <li class="nav-item active">
     <a class="nav-link" href="{% url 'user_logout' %}" style="color: rgb(20, 220, 63);"><i class="fa fa-sign-out" aria-hidden="true" ></i>Logout</a>
@@ -27,8 +27,8 @@
 <section class="post-section">
 {% for note in notes %}
 
-<div class="note-card" style="width: 40% auto; height: 30%; padding: 10px;">
-  <div class="container" style="width: 40%;">
+<div class="note-card" style="width: 50% auto; height: 30%; padding: 10px;">
+  <div class="container" style="width: 60%;">
     <div class="card">
       <div
         class="card-header"

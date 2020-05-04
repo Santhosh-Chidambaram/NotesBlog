@@ -11,10 +11,14 @@ class Notes(models.Model):
     pub_date = models.DateTimeField(auto_now=True)
     notes_files = models.FileField(upload_to='uploads/',blank=True,null=True)
 
+    def __str__(self):
+        return f"{self.title}"
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic = models.ImageField(default='default.jpg',upload_to='profile_pics')
+    followers = models.ManyToManyField(User,related_name='follower_set')
+    bookmarks = models.ManyToManyField(Notes)
 
     def __str__(self):
         return f'{self.user.username} Profile'
