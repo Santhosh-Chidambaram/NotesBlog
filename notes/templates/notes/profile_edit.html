@@ -1,0 +1,36 @@
+{% extends "notes/base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div class="card" style="width: 60%;border-radius: 25px;">
+    <div class="container" style="width: 50%;padding: 15px 0;">
+    <div class="card-content">
+        <div class="profile-section" style="display: flex;">
+            <img class="rounded-circle account-img" src="{{ user.profile.profile_pic.url }}" 
+            alt="{{ user.profile.profile_pic.url }}" height="100" width="110"> 
+            <div style="padding: 8px;color:rgb(59, 216, 255);">
+            <h2 > {{ user.username }}</h2>
+            <h5>{{ user.email }}</h5>
+
+            </div>
+            
+            
+        </div>
+        
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ u_form|crispy }}
+            {{ p_form|crispy }}
+
+            <button class="btn btn-primary" type="submit">Update</button>
+            
+        </form>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}

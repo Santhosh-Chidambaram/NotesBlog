@@ -5,17 +5,27 @@ from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.models import User
 from .models import Notes
 from django.contrib.auth.decorators import login_required
-from django.views.generic import UpdateView,View
+from django.views.generic import UpdateView,View,ListView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 def homeView(request):
-    note = Notes.objects.all()
-    context = {
-        'note':note
+    note = Notes.objects.all().order_by('-pub_date')
+    pdf = []
+    for n in note:
+        pdf_str = str(n.notes_files)
+        if ".pdf" in pdf_str:
+            pdf.append(pdf_str)
+    context={
+        'notes':note,
+        'pdf':pdf
+        
     }
-    return render(request,'notes/home.html')
+    return render(request,'notes/index.html',context)
+#About View
+def about(request):
+    return render(request,'notes/about.html')
 
 #Register View
 
@@ -29,7 +39,7 @@ class RegisterView(View):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(request,username=username,password=raw_password)
             login(request,user)
-            return HttpResponseRedirect('notes')
+            return HttpResponseRedirect('home')
     def get(self,request):
         form = UserRegisterForm()
         return render(request,'notes/register.html',{'form':form})
@@ -43,7 +53,7 @@ class LoginView(View):
         user = authenticate(username=username,password=password)
         if user is not None and user.is_active:
             login(request,user)
-            return redirect('notes')
+            return redirect('home')
         return HttpResponseRedirect("/user_login")
     
     def get(self,request):
@@ -52,22 +62,6 @@ class LoginView(View):
 def user_logout(request):
     logout(request)
     return redirect('home')
-
-#All Notes View
-def notes(request):
-    note = Notes.objects.all().order_by('-pub_date')
-    pdf = []
-    for n in note:
-        pdf_str = str(n.notes_files)
-        if ".pdf" in pdf_str:
-            pdf.append(pdf_str)
-    context={
-        'notes':note,
-        'pdf':pdf
-        
-    }
-    return render(request,'notes/notes.html',context)
-
 
 #User Posts View
 def myposts(request):
@@ -93,16 +87,13 @@ class NotesAddView(LoginRequiredMixin,View):
         if form.is_valid():
             n = Notes(user=request.user,title=request.POST['title'],context=request.POST['context'],notes_files=request.FILES['notes_files'])
             n.save()
-            return redirect('notes')
+            return redirect('home')
         return render(request,'notes/addnotes.html',{'form':form})
     
     def get(self,request):
          form = AddNotesForm()
          return render(request,'notes/addnotes.html',{'form':form})
 
-#About View
-def about(request):
-    return render(request,'notes/about.html')
 
 #Edit Notes View
 
@@ -129,6 +120,14 @@ def NotesDeleteView(request,pk):
 #Profile View
 
 class ProfileView(LoginRequiredMixin,View):
+
+    def get(self,request):
+        return render(request,'notes/profile.html')
+    
+
+#ProfileEdit View
+   
+class ProfileEditView(View):
     def post(self,request):
         p_form = ProfileUpdateForm(request.POST,
                                    request.FILES,
@@ -143,8 +142,14 @@ class ProfileView(LoginRequiredMixin,View):
         u_form = UserUpdateForm(instance=request.user)
         context ={
         'p_form':p_form,
-        'u_form':u_form
+        'u_form':u_form,
+        'profile':True
     }
         return render(request,'notes/profile.html',context)
 
-   
+class NotificationsView(LoginRequiredMixin,ListView):
+    template_name='notes/notification.html'
+    context_object_name='notifis'
+
+    def get_queryset(self):
+        return self.request.user.to_user_set.all().order_by('-date')

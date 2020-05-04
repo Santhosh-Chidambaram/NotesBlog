@@ -1,4 +1,31 @@
-{% extends "notes/base.html" %} {% block mypost %} {% for note in notes %}
+{% extends "notes/base.html" %}
+
+{% block nav %}
+{% if user.is_authenticated %}
+<ul class="navbar-nav">
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'add_notes' %}" style="color: rgb(20, 220, 193);"><i class="fa fa-plus" aria-hidden="true" ></i>Add Post</a>
+        </li>
+    <li class="nav-item ">
+        <a type="button" class="nav-link" href="{% url 'notification' %}" style="color: #fafafa;">
+            <i class="fa fa-bell"></i> Notifications <span class="badge badge-danger" style="color: rgb(255, 255, 255);">{{ user.to_user_set.count }}</span>
+          </a>
+    </li>
+    
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'profile' %}" style="color: rgb(20, 213, 220);"><img src="{{ user.profile.profile_pic.url }}" alt="{{ user.profile.profile_pic.url }}" width="35" height="35" class="rounded-circle"> Profile</a>
+        </li>
+    <li class="nav-item active">
+    <a class="nav-link" href="{% url 'user_logout' %}" style="color: rgb(20, 220, 63);"><i class="fa fa-sign-out" aria-hidden="true" ></i>Logout</a>
+    </li>
+</ul>
+
+{% endif %}
+{% endblock %}
+
+{% block content %} 
+<section class="post-section">
+{% for note in notes %}
 
 <div class="note-card" style="width: 40% auto; height: 30%; padding: 10px;">
   <div class="container" style="width: 40%;">
@@ -7,13 +34,14 @@
         class="card-header"
         style="color: #fafafa; font-size: 20px;background-color: rgb(112, 42, 224);"
       >
-        {{note.title}}
+      <img src="{{ note.user.profile.profile_pic.url }}" class="rounded-circle" height="40px" width="40px"> {{note.user.username}}
         <div style="float: right;">
             <a class="btn-link" href="{% url 'edit_notes' note.id %}" style="padding-right: 20px;"><i class="fa fa-pencil-square-o" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
             <a class="btn-link" href="{% url 'delete-notes' note.id %}" ><i class="fa fa-trash" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
         </div>
       </div>
       <div class="card-body">
+        <h4 style="text-align: center;">{{note.title}}</h4> 
         <blockquote class="blockquote mb-0">
           <p>{{ note.context}}</p>
 
@@ -29,8 +57,8 @@
             <img
               src="/media/{{note.notes_files}}"
               alt="{{note.notes_files}}"
-              width="400"
-              height="150"
+    
+              height="100px"
             />
           </a>
 
@@ -39,8 +67,8 @@
             <img
               src="/media/{{note.notes_files}}"
               alt="{{note.notes_files}}"
-              width="400"
-              height="150"
+
+              height="100px"
             />
           </a>
 
@@ -56,4 +84,6 @@
   </div>
 </div>
 
-{% endfor %} {% endblock %}
+{% endfor %} 
+</section>
+{% endblock %}

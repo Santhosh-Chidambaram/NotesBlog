@@ -19,6 +19,18 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username} Profile'
 
+class Notification(models.Model):
+    from_user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    to_user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='to_user_set',null=True)
+    notes = models.ForeignKey(Notes,on_delete=models.CASCADE,null=True)
+    followed = models.BooleanField(default=False)
+    unfollowed = models.BooleanField(default=False)
+    liked = models.BooleanField(default=False)
+    unliked = models.BooleanField(default=False)
+    new_notes = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+
 @receiver(post_save,sender=User)
 def create_or_get_profile(sender,instance,created,**kwargs):
     if created:

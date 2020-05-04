@@ -2,35 +2,85 @@
 {% load crispy_forms_tags %}
 
 
-{% block auth %}
+{% block nav %}
+{% if user.is_authenticated %}
+<ul class="navbar-nav">
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'add_notes' %}" style="color: rgb(20, 220, 193);"><i class="fa fa-plus" aria-hidden="true" ></i>Add Post</a>
+        </li>
+    <li class="nav-item ">
+        <a type="button" class="nav-link" href="{% url 'notification' %}" style="color: #fafafa;">
+            <i class="fa fa-bell"></i> Notifications <span class="badge badge-danger" style="color: rgb(255, 255, 255);">{{ user.to_user_set.count }}</span>
+          </a>
+    </li>
+    
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'profile' %}" style="color: rgb(20, 213, 220);"><img src="{{ user.profile.profile_pic.url }}" alt="{{ user.profile.profile_pic.url }}" width="35" height="35" class="rounded-circle"> Profile</a>
+        </li>
+    <li class="nav-item active">
+    <a class="nav-link" href="{% url 'user_logout' %}" style="color: rgb(20, 220, 63);"><i class="fa fa-sign-out" aria-hidden="true" ></i>Logout</a>
+    </li>
+</ul>
 
-<div class="card" style="width: 60%;border-radius: 25px;">
-    <div class="container" style="width: 50%;padding: 15px 0;">
-    <div class="card-content">
-        <div class="profile-section" style="display: flex;">
+{% endif %}
+{% endblock %}
+{% block content %}
+<section style="margin-top: 5rem;margin-left: 15%;">
+<div class="card" style="width: 80%;border-radius: 25px;">
+<div class="container" style="padding: 15px 0;margin: 2px;">
+    <div class="card-content" >
+        <div class="profile-section" >
+            
             <img class="rounded-circle account-img" src="{{ user.profile.profile_pic.url }}" 
-            alt="{{ user.profile.profile_pic.url }}" height="100" width="110"> 
+            alt="{{ user.profile.profile_pic.url }}" height="100" width="110"><a class="btn btn-danger" href="{% url 'profile-edit' %}" style="position: absolute;border-radius: 10px;margin-left: 10rem;" >Edit Profile</a> 
             <div style="padding: 8px;color:rgb(59, 216, 255);">
-            <h2 > {{ user.username }}</h2>
-            <h5>{{ user.email }}</h5>
+                    <h2 > {{ user.username }}</h2>
+                    <h5>{{ user.email }}</h5>
+                    <hr>
+            </div>
+            {% if profile %}
+            <div class="container">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ u_form|crispy }}
+                    {{ p_form|crispy }}
+        
+                    <button class="btn btn-primary" type="submit">Update</button>
+                    
+                </form>
 
+            </div>
+               
+                <hr>
+            {% endif %}
+
+            <div class="container">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Followers</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Likes</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Bookmarks</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">..g.</div>
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">.s..</div>
+                    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">..d.</div>
+                  </div>
             </div>
             
             
         </div>
         
         
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ u_form|crispy }}
-            {{ p_form|crispy }}
-
-            <button class="btn btn-primary" type="submit">Update</button>
-            
-        </form>
+        
     </div>
 </div>
 </div>
-
+</section>
 
 {% endblock %}

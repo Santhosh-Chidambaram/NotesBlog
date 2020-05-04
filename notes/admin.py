@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Notes,Profile
+from .models import *
 from django.contrib.auth.models import User
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
@@ -18,5 +18,6 @@ class CustomUserAdmin(UserAdmin):
         return super(CustomUserAdmin,self).get_inline_instances(request,obj)
 admin.site.register(Notes)
 admin.site.register(Profile)
+admin.site.register(Notification)
 admin.site.unregister(User)
 admin.site.register(User,CustomUserAdmin)
