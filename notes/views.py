@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import UpdateView,View,ListView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 def homeView(request):
@@ -191,3 +192,19 @@ def Follow(request,pk):
         notfiy = Notification(to_user=re_user,from_user=request.user,followed=True,unfollowed=False)
         notfiy.save()
         return redirect('profile',pk=re_user.pk)
+
+@csrf_exempt
+def SearchView(request):
+    if request.method == 'POST':
+        query = request.POST.get('query')
+        q_user = get_object_or_404(User,username=query)
+        return render(request,'notes/profile.html',{'re_user':q_user})
+    return redirect('home')
+
+def NotesDetailView(request,pk):
+    re_notes = get_object_or_404(Notes,pk=pk)
+    pdf = []
+    pdf_str = str(re_notes.notes_files)
+    if ".pdf" in pdf_str:
+            pdf.append(pdf_str)
+    return render(request,'notes/notes_detail.html',{'re_notes':re_notes,'pdf':pdf})

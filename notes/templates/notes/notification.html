@@ -9,28 +9,6 @@
     }
 </style>
 {% endblock %}
-{% block nav %}
-{% if user.is_authenticated %}
-<ul class="navbar-nav">
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'add_notes' %}" style="color: rgb(20, 220, 193);"><i class="fa fa-plus" aria-hidden="true" ></i>Add Post</a>
-        </li>
-    <li class="nav-item ">
-        <a type="button" class="nav-link" href="{% url 'notification' %}" style="color: #fafafa;">
-            <i class="fa fa-bell"></i> Notifications <span class="badge badge-danger" style="color: rgb(255, 255, 255);">{{ user.to_user_set.count }}</span>
-          </a>
-    </li>
-    
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'profile' user.pk %}" style="color: rgb(20, 213, 220);"><img src="{{ user.profile.profile_pic.url }}" alt="{{ user.profile.profile_pic.url }}" width="35" height="35" class="rounded-circle"> {{user.username}}</a>
-        </li>
-    <li class="nav-item active">
-    <a class="nav-link" href="{% url 'user_logout' %}" style="color: rgb(20, 220, 63);"><i class="fa fa-sign-out" aria-hidden="true" ></i>Logout</a>
-    </li>
-</ul>
-
-{% endif %}
-{% endblock %}
 
 {% block content %}
     <section style="margin-top: 4.2rem;">
@@ -90,7 +68,7 @@
                         <small style="position: absolute;top: 0;right: 0;">{{ notif.date}}</small>
                         <span style="position: absolute;top: 25%;right: 1%;"><a class="btn btn-outline-danger" href="{% url 'notify-remove' notif.pk %}" ><i class="fa fa-times" aria-hidden="true" style="font-size: 20px;"></i></a></span>
                         <p><img src="{{  notif.from_user.profile.profile_pic.url }}" height="50px" class="rounded-bg">
-                              <b style="font-size: 20px;"><a href="{% url 'profile' notif.from_user.pk %}">{{ notif.from_user.username }}</a></b>  created a new notes  <b style="font-size: 20px;"><a href="#">{{ notif.notes.title }}</a></b></p></li>
+                              <b style="font-size: 20px;"><a href="{% url 'profile' notif.from_user.pk %}">{{ notif.from_user.username }}</a></b>  created a new notes  <b style="font-size: 20px;"><a href="{% url 'notes-detail' notif.notes.pk %}">{{ notif.notes.title }}</a></b></p></li>
 
                 </ul>
                 {% else %}

@@ -1,0 +1,71 @@
+{% extends "notes/base.html" %}
+
+
+
+{% block content %}
+
+<section class="post-section">
+    {% if re_notes %}
+    
+    <div class="note-card" style="width: 50% auto; height: 30%; padding: 10px;">
+      <div class="container" style="width: 60%;">
+        <div class="card">
+          <div
+            class="card-header"
+            style="color: #fafafa; font-size: 20px;background-color: rgb(112, 42, 224);"
+          >
+          <img src="{{ re_notes.user.profile.profile_pic.url }}" class="rounded-circle" height="40px" width="40px"> {{re_notes.user.username}}
+          {% if user.pk == re_notes.user.pk %}
+            <div style="float: right;">
+                <a class="btn-link" href="{% url 'edit_notes' note.id %}" style="padding-right: 20px;"><i class="fa fa-pencil-square-o" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
+                <a class="btn-link" href="{% url 'delete-notes' note.id %}" ><i class="fa fa-trash" aria-hidden="true" style="color: #fafafa;font-size: 20px"></i></a>
+            </div>
+          {% endif %}
+          </div>
+          <div class="card-body">
+            <h4 style="text-align: center;">{{re_notes.title}}</h4> 
+            <blockquote class="blockquote mb-0">
+              <p>{{ re_notes.context}}</p>
+    
+              {% if pdf %} {% for p in pdf %} {% if p == re_notes.notes_files %}
+              <a href="/media/{{note.notes_files}}" style="font-size: 25px;">
+                <i class="fa fa-file-pdf-o" style="font-size: 25px; color: red;"
+                  >{{re_notes.notes_files}}</i
+                >
+              </a>
+    
+              {% else %}
+              <a href="/media/{{ re_note.notes_files }}">
+                <img
+                  src="/media/{{re_notes.notes_files}}"
+                  alt="{{note.notes_files}}"
+        
+                  height="100px"
+                />
+              </a>
+    
+              {% endif %} {% endfor %} {% else %}
+              <a href="/media/{{ re_notes.notes_files }}">
+                <img
+                  src="/media/{{re_notes.notes_files}}"
+                  alt="{{note.notes_files}}"
+    
+                  height="100px"
+                />
+              </a>
+    
+              {% endif %}
+    
+              <footer class="blockquote-footer">{{ re_notes.user.username }}</footer>
+            </blockquote>
+          </div>
+          <div class="card-footer text-muted">
+            {{ re_note.pub_date }}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {% endif %} 
+    </section>
+{% endblock %}
