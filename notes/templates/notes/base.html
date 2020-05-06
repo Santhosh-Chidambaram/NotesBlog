@@ -122,7 +122,9 @@
                         <div class="dropdown-menu dropdown-menu-right" >
                             <a class="dropdown-item" href="{% url 'profile' user.pk %}">Profile</a>
                             <a class="dropdown-item" href="{% url 'myposts' %}">My Posts</a>
-                            <a class="dropdown-item" href="#">Bookmarks</a>
+                            <a class="dropdown-item" href="{% url 'bookmark-detail' %}">Bookmarks<span class="badge badge-danger" style="color: rgb(255, 255, 255);"
+                                >{{ user.profile.bookmarks.count }}</span
+                            ></a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'user_logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
                         </div>
@@ -157,9 +159,30 @@
         </main>  
        
         
-
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script>
-        
-    </script>
+        function bookmark(pk){
+          
+              $.ajax({
+              url: '/bookmark/'+pk,
+              type: 'post', 
+              success: function(data) {
+      
+                  if(data.marked){
+                        document.querySelector('#bookmark-'+pk).style.color='red';            
+      
+                  }
+                  else{
+                    document.querySelector('#bookmark-'+pk).style.color='#d8cdcd';
+                    
+                  }
+                  
+              },
+              failure: function(data) { 
+                  alert('Got an error dude');
+              }
+          }); }
+        </script>
+    {% block js%}{% endblock %}
     </body>
 </html>

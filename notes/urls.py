@@ -14,7 +14,9 @@ urlpatterns = [
         path('notfiy/remove/<int:pk>',NotifyRemove,name='notify-remove'),
         path('notfiy/remove/all',NotifyRemoveAll,name='notify-removeall'),
         path('user/<int:pk>/follow',Follow,name='follow'),
-        path('searchquery/',SearchView,name='user-search')
+        path('searchquery/',SearchView,name='user-search'),
+        path('bookmark/<int:pk>',BookmarksView,name='bookmark'),
+        path('user/bookmarks',BookmarksDetailView,name='bookmark-detail')
         
 ]
 

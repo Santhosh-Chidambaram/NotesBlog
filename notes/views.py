@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect,reverse,get_object_or_404
+from django.shortcuts import render,redirect,reverse,get_object_or_404,get_list_or_404
 from django.http import HttpResponse,HttpResponseRedirect,JsonResponse
 from .forms import UserRegisterForm,AddNotesForm,ProfileUpdateForm,UserUpdateForm,NotesEditForm
 from django.contrib.auth import login,logout,authenticate
@@ -128,8 +128,16 @@ class ProfileView(LoginRequiredMixin,View):
     template_name = "notes/profile.html"
     def get(self,request,pk):
         re_user  = get_object_or_404(User,pk=pk)
+        notes = Notes.objects.filter(user=re_user)
+        pdf = []
+        for n in notes:
+            pdf_str = str(n.notes_files)
+            if ".pdf" in pdf_str:
+                pdf.append(pdf_str)
         context={
-            "re_user":re_user
+            "re_user":re_user,
+            "notes":notes,
+            "pdf":pdf
         }
         return render(request,self.template_name,context)
     
@@ -208,3 +216,24 @@ def NotesDetailView(request,pk):
     if ".pdf" in pdf_str:
             pdf.append(pdf_str)
     return render(request,'notes/notes_detail.html',{'re_notes':re_notes,'pdf':pdf})
+
+@csrf_exempt
+def BookmarksView(request,pk):
+        note = get_object_or_404(Notes,pk=pk)
+        if note in request.user.profile.bookmarks.all():
+                request.user.profile.bookmarks.remove(note)
+                request.user.save()
+                return JsonResponse({"marked":False})
+        else:
+                request.user.profile.bookmarks.add(note)
+                request.user.save()
+                return JsonResponse({"marked":True})
+
+def BookmarksDetailView(request):
+    bookmarks = request.user.profile.bookmarks.all()
+    pdf = []
+    for n in bookmarks:
+        pdf_str = str(n.notes_files)
+        if ".pdf" in pdf_str:
+            pdf.append(pdf_str)
+    return render(request,'notes/bookmarks.html',{"bookmarks":bookmarks,"pdf":pdf})

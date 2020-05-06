@@ -1,64 +1,9 @@
-{% extends "notes/base.html" %} 
-        {% block head %}
-            <style>
-            .home-section h2 {
-                font-size: 50px;
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                font-weight: lighter;
-                color: black;
-            }
-            .home-section p {
-                font-size: 25px;
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                font-weight: lighter;
-                color: black;
-            }
-            
-            .home-section a {
-                text-decoration: none;
-                display: inline-block;
-                padding: 8px 25px;
-                color: #fafafa;
-                background-color: rgb(247, 97, 179);
-                border-radius: 25px;
-                opacity: 0.8;
-            }
-            .home-section a:hover {
-                background-color: rgb(228, 31, 139);
-            }
-            
-            .profile-section {
-                margin-left: 15%;
-            }
-            </style>
-            
-              
-           
-        {% endblock %} 
-        
-
-{% block home %}
-<section class="home-section">
-<div class="container" style="margin-top: 10rem;">
-  <h2>Share Notes & Share Knowledge</h2>
-  <p>
-    Take notes whatever you feel important and learn everything you can without
-    losing any materials.
-  </p>
-  <p>
-    Share whatever you learnt with everyone so they can also learn from you..
-  </p>
-  <a href="{% url 'user_register' %}" class="register">Register</a>
-  <a href="{% url 'user_login' %}" class="login" style="margin-left: 8px;"
-    >Login</a
-  >
-</div>
-</section>
-{% endblock %}
+{% extends "notes/base.html" %}
 
 {% block content %} 
 <section class="post-section">
-{% for note in notes %}
+    <h2 style="text-align: center;color: #fafafa;text-decoration: underline;text-transform: uppercase;">{{ user.username }} Bookmarks</h2>
+{% for note in bookmarks %}
 
 <div class="note-card" style="width: 50% auto; height: 30%; padding: 10px;">
   <div class="container" style="width: 60%;">
@@ -81,8 +26,8 @@
           <p>{{ note.context}}</p>
 
           {% if pdf %} {% for p in pdf %} {% if p == note.notes_files %}
-          <a href="/media/{{note.notes_files}}" style="font-size: 25px;">
-            <i class="fa fa-file-pdf-o" style="font-size: 25px; color: red;"
+          <a href="/media/{{note.notes_files}}" >
+            <i class="fa fa-file-pdf-o" style="font-size: 20px; color: red;"
               >{{note.notes_files}}</i
             >
           </a>
@@ -128,4 +73,3 @@
 </section>
 
 {% endblock %}
-
