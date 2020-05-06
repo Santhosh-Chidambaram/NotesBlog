@@ -3,9 +3,13 @@
 
 #Notes
 <br />
-first clone the repo/
-then do python manage.py makemigrations/
-python manage.py migrate/
-python manage.py migrate --run-syncdb/
+first clone the repo
+<br />
+then do python manage.py makemigrations
+<br />
+python manage.py migrate
+<br />
+python manage.py migrate --run-syncdb
+<br />
 
 so that you can use the website/
