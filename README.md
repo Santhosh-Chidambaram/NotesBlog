@@ -1,7 +1,8 @@
 "# Notesblog" 
 ------A simple Notes Blog Application using django
 
-#Notes__
+#Notes
+<br />
 first clone the repo/
 then do python manage.py makemigrations/
 python manage.py migrate/
